@@ -9,6 +9,14 @@ double Lp = 4.943063;         // ECLIPTIC LONGITUDE OF PERIGEE
 double TOL = 1e-10;
 double year = 365.2425;
 
+char buffer[50];
+int cal[12]={31,28,31,30,31,30,
+             31,31,30,31,30,31};
+char* monthName[12]={"jan","feb","mar",
+                     "apr","may","jun",
+                     "jul","aug","sep",
+                     "oct","nov","dec"};
+
 
 double kepler(double E, double M) {
   return E-e*sin(E)-M;
@@ -21,6 +29,33 @@ double mod(double op1, double op2) {
   while(op1<0) op1+=op2;
   while(op1>=op2) op1-=op2;
   return op1;
+}
+
+void tic(int *day,int *month){
+  *day=*day+1;
+  if(*month == 12 && *day == 32) {
+    *day=*month=1;
+    return;
+  }
+  if(*day>cal[*month-1]){
+    *day=1;
+    *month=*month+1;
+    return;
+  }
+}
+
+char* dateToString(int n){
+  int month=1;
+  int day=1;
+  int i;
+  for(i=0;i<n;++i){
+    tic(&day,&month);
+  }
+  sprintf(buffer,"%s, %2i%s",
+        monthName[month-1],
+        day,
+        (day==1)?"st":((day==2)?"nd":"th"));
+  return buffer;
 }
 
 double newton(double (*f)(double,double), 
@@ -46,7 +81,7 @@ int main(int argc, char const *argv[]) {
   double eot;         // ÆQUATION OF TIME
 
   // JAN 1st
-  day=0;
+  day=74;
   M = mod(((day-4)/year*2*M_PI),2*M_PI);
   E = M;
   E = mod(newton(&kepler,&Dkepler,E,M),2*M_PI);
@@ -64,12 +99,14 @@ int main(int argc, char const *argv[]) {
   fprintf(stderr,"L = %e\n",L);
   fprintf(stderr,"alpha = %e\n\n",alpha);
 
-  alphaM = mod((day-78)/year*2*M_PI,2*M_PI);
-  eot = alpha - alphaM;
+
+
+  alphaM = mod(Lp+M,2*M_PI);
+  eot = alphaM - alpha;
 
 
   fprintf(stderr,"alphaM = %e\n\n",alphaM);
-  fprintf(stderr,"eot = %e\n\n",eot);
+  fprintf(stderr,"eot (min) = %e\n\n",eot/(M_PI)*12*60);
 
 
   for(day=0;day<365;day++) {
@@ -82,11 +119,11 @@ int main(int argc, char const *argv[]) {
     while(alpha-L < 1.0) alpha+=M_PI;
     while(alpha-L > 1.0) alpha-=M_PI;
     
-    alphaM = mod((day-78)/year*2*M_PI,2*M_PI);
-    eot = alpha - alphaM;
-    while(eot>M_PI) eot-=M_PI;
-    while(eot<-M_PI) eot+=M_PI;
-    printf("%e\n",eot);
+    alphaM = mod(Lp+M,2*M_PI);
+    eot = alphaM - alpha;
+    while(eot>M_PI/2) eot-=M_PI;
+    while(eot<-M_PI/2) eot+=M_PI;
+    printf("\"%s\",\t%+f\n",dateToString(day), eot/(M_PI)*12*60);
   }
 
 }
