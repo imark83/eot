@@ -71,7 +71,7 @@ double newton(double (*f)(double,double),
 }
 
 int main(int argc, char const *argv[]) {
-  double day;         // DAY OF YEAR
+  int day;            // DAY OF YEAR
   double M;           // MEAN ANOMALY OF REAL SUN
   double E;           // ECCENTRIC ANOMALY OF REAL SUN
   double phi;         // REAL ANOMALY OF REAL SUN
@@ -80,9 +80,11 @@ int main(int argc, char const *argv[]) {
   double alphaM;      // RIGHT ASCENSION OF MEAN SUN
   double eot;         // ÆQUATION OF TIME
 
+  int month;
+
   // JAN 1st
   day=74;
-  M = mod(((day-4)/year*2*M_PI),2*M_PI);
+  M = mod(((day-4.0)/year*2*M_PI),2*M_PI);
   E = M;
   E = mod(newton(&kepler,&Dkepler,E,M),2*M_PI);
   phi = mod(2*atan(sqrt((1+e)/(1-e))*tan(E/2)),2*M_PI);
@@ -109,8 +111,9 @@ int main(int argc, char const *argv[]) {
   fprintf(stderr,"eot (min) = %e\n\n",eot/(M_PI)*12*60);
 
 
+  //for(month=0,day=0;day<365;day+=cal[month++]) {
   for(day=0;day<365;day++) {
-    M = mod(((day-4)/year*2*M_PI),2*M_PI);
+    M = mod(((day-4.0)/year*2*M_PI),2*M_PI);
     E = M;
     E = mod(newton(&kepler,&Dkepler,E,M),2*M_PI);
     phi = mod(2*atan(sqrt((1+e)/(1-e))*tan(E/2)),2*M_PI);
@@ -123,7 +126,8 @@ int main(int argc, char const *argv[]) {
     eot = alphaM - alpha;
     while(eot>M_PI/2) eot-=M_PI;
     while(eot<-M_PI/2) eot+=M_PI;
-    printf("\"%s\",\t%+f\n",dateToString(day), eot/(M_PI)*12*60);
+    //printf("\"%s\",\t%+f\n",dateToString(day), eot/(M_PI)*12*60);
+    printf("%3i %+f\n",day, eot/(M_PI)*12*60);
   }
 
 }

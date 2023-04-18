@@ -1,0 +1,26 @@
+\documentclass{article}
+\usepackage{fullpage}
+
+\usepackage{tikz}
+\usetikzlibrary {datavisualization.formats.functions}
+
+\pagestyle{empty}
+
+\begin{document}
+\setlength{\parindent}{0pt}
+\begin{center}
+\begin{tikzpicture}[x=0.04cm,y=0.2cm]
+  \draw[very thick] plot[smooth] file {eot.txt};
+  \draw (0,-15) rectangle (364,20);
+  \foreach \i in {-15,-10,...,20} {
+    \draw (364,\i) -- (0,\i);
+    \draw (0,\i) -- +(-3mm,0) node[left]{\i};
+  }
+
+  \foreach \i in {31,59,90,120,151,181,212,243,273,304,334} {
+    \draw (\i,-15) -- +(0,-3mm);
+  }
+
+\end{tikzpicture}
+\end{center}
+\end{document}
