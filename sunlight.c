@@ -4,7 +4,8 @@
 // CONSTANTS
 double e = 0.01669;           // ECCENTRICITY
 double eps = 0.4089889;       // OBLICUITY OF ORBIT
-double Lp = 4.943063;         // ECLIPTIC LONGITUDE OF PERIGEE
+// double Lp = 4.943063;         // ECLIPTIC LONGITUDE OF PERIGEE
+double Lp = 4.975;            // ECLIPTIC LONGITUDE OF PERIGEE
 double latZgz = 0.726958722276505; // GEOGRAPHICAL LATITUDE OF ZGZ
 
 double TOL = 1e-10;
@@ -87,7 +88,7 @@ int main(int argc, char const *argv[]){
 
 
   day=79;
-  M = mod(((day-3.0)/year*2*M_PI),2*M_PI);
+  M = mod(((day-4.678472)/year*2*M_PI),2*M_PI);
   E = M;
   E = mod(newton(&kepler,&Dkepler,E,M),2*M_PI);
   phi = mod(2*atan(sqrt((1+e)/(1-e))*tan(E/2)),2*M_PI);
@@ -107,7 +108,30 @@ int main(int argc, char const *argv[]){
 
 
 
+  for(day=0;day<365;day++) {
+    M = mod(((1+day-4.678472)/year*2*M_PI),2*M_PI);
+    E = M;
+    E = mod(newton(&kepler,&Dkepler,E,M),2*M_PI);
+    phi = mod(2*atan(sqrt((1+e)/(1-e))*tan(E/2)),2*M_PI);
+        // RECHECK ANGLE? I DON'T THINK SO
+    L=mod(Lp+phi,2*M_PI);
+    delta = asin(sin(eps)*sin(L));
+    halfDay = acos(-tan(latZgz)*tan(delta));
+    aux = modf(2*halfDay/M_PI*12,&hours);
+    modf(aux*60,&minutes);
 
+    delta*=180/M_PI;
+    L*=180/M_PI;
+    phi*=180/M_PI;
+    M*=180/M_PI;
+    printf("%s -> %2i hours, %2i minutes\n",
+           dateToString(day),(int) hours,(int) minutes);
+
+    // printf("%s\tphi=%6.2f\tM=%6.2f\tdelta=%6.2f\tL=%6.2f\n",
+    //         dateToString(day),phi,M,delta,L);
+
+
+  }
 
   return 0;
 }
