@@ -117,6 +117,7 @@ int main(int argc, char const *argv[]){
     L=mod(Lp+phi,2*M_PI);
     delta = asin(sin(eps)*sin(L));
     halfDay = acos(-tan(latZgz)*tan(delta));
+    halfDay += 0.014544; // EFFECT OF REFRACTION AND DIAMETER ANGLE
     aux = modf(2*halfDay/M_PI*12,&hours);
     modf(aux*60,&minutes);
 
